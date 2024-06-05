@@ -334,8 +334,8 @@ public class InspectorVpnService extends VpnService {
                 try (InputStream vpnInput = new FileInputStream(vpn.getFileDescriptor());
                      OutputStream vpnOutput = new FileOutputStream(vpn.getFileDescriptor()))
                 {
-                    DataOutput output = new DataOutputStream(socketOutputStream);
-                    output.writeByte(0x0);
+                    DataOutput socketOutput = new DataOutputStream(socketOutputStream);
+                    socketOutput.writeByte(0x0);
 
                     Thread thread = new Thread(new StreamForward(new DataInputStream(socketInputStream), vpnOutput, mtu));
                     thread.start();
@@ -350,11 +350,11 @@ public class InspectorVpnService extends VpnService {
                             if (length > mtu) {
                                 throw new IOException("Invalid mtu=" + mtu + ", length=" + length);
                             }
-                            output.writeShort(length);
+                            socketOutput.writeShort(length);
                             for (int i = 0; i < length; i++) {
                                 packet[i] ^= VPN_MAGIC;
                             }
-                            output.write(packet, 0, length);
+                            socketOutput.write(packet, 0, length);
                             socketOutputStream.flush();
                         }
                     }
